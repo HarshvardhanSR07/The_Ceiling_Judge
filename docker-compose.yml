@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: forge-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/data/db
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: forge-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./data/ollama:/root/.ollama
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: forge-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - MONGO_URI=mongodb://mongo:27017/forge
+      - OLLAMA_URL=http://ollama:11434
+      - RAG_URL=http://rag:8001
+      - NODE_ENV=production
+    depends_on:
+      - mongo
+      - ollama
+    volumes:
+      - ./fixtures.json:/app/fixtures.json:ro
+      - ./data/lancedb:/app/data/lancedb
+    restart: unless-stopped
+
+  rag:
+    build:
+      context: ./rag-service
+      dockerfile: Dockerfile
+    container_name: forge-rag
+    ports:
+      - "8001:8001"
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+      - LANCEDB_PATH=/data/lancedb
+    volumes:
+      - ./data/lancedb:/data/lancedb
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  # Frontend is built into backend static serve for offline simplicity.
+  # Uncomment below for separate Vite dev server during development.
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #   ports:
+  #     - "5173:5173"
+  #   depends_on:
+  #     - backend

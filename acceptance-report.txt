@@ -1,0 +1,7 @@
+DOGFOOD 2026 acceptance report
+portal: http://localhost:8080
+claimed: T1 T2
+fixtures: fixtures.json
+
+NOTE: Run `python3 run.py .dogfood.toml > acceptance-report.txt`
+after `docker compose up` to replace this placeholder with the real report.

@@ -1,0 +1,21 @@
+[portal]
+base_url = "http://localhost:8080"
+
+[tiers]
+claimed = ["T1", "T2"]
+pitch = "Forge ?? - offline auth, strict role isolation, IMBR-BT ranking.
+
+[auth]
+# Seed prints these on boot. Prefer Cookie form for the official checker.
+organizer   = "Cookie: session=org_seed_01"
+judge_a     = "Cookie: session=jdg_a_seed_01"
+judge_b     = "Cookie: session=jdg_b_seed_01"
+participant = "Cookie: session=prt_seed_01"
+
+[routes]
+gallery      = "/projects"
+submit       = "/projects"
+judge_scores = "/api/judge/scores"
+peer_scores  = "/api/judge/scores?judge=jdg_01"
+csv_export   = "/api/export.csv"
+
